@@ -116,15 +116,15 @@ jobs:
         # 提取设备名称
         grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
         
-        # 声明局部临时变量用于在此步骤内直接复制配置
+        # 声明局部变量并直接进行配置复制
         DEVICE_NAME_VAL=""
         [ -s DEVICE_NAME ] && DEVICE_NAME_VAL="_$(cat DEVICE_NAME)"
         FILE_DATE_VAL="_$(date +"%Y%m%d%H%M")"
         
-        # 直接使用相对路径复制配置文件至输出目录。若失败则跳过而不影响整个工作流
+        # 复制到 bin/targets/*/* （即未来的 env.FIRMWARE 目录），允许失败跳过
         cp .config bin/targets/*/*/config${DEVICE_NAME_VAL}${FILE_DATE_VAL} || true
         
-        # 写入环境变量供后续步骤使用
+        # 写入全局环境变量供后续步骤使用
         [ -s DEVICE_NAME ] && echo "DEVICE_NAME=${DEVICE_NAME_VAL}" >> $GITHUB_ENV
         echo "FILE_DATE=${FILE_DATE_VAL}" >> $GITHUB_ENV
 
