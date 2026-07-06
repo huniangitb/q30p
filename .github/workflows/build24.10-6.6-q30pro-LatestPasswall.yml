@@ -132,7 +132,8 @@ jobs:
       if: env.UPLOAD_FIRMWARE == 'true' && !cancelled()
       run: |
         cd openwrt/bin/targets/*/*
-        cp ../../../.config ./config${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
+        # 尝试复制完整配置文件。如果因任何原因失败，系统将输出错误信息并直接跳过，不会导致工作流中断
+        cp $GITHUB_WORKSPACE/openwrt/.config ./config${{ env.DEVICE_NAME }}${{ env.FILE_DATE }} || echo "Warning: Failed to copy .config file, skipping."
         rm -rf packages
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
         echo "status=success" >> $GITHUB_OUTPUT
